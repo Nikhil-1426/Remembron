@@ -1,0 +1,135 @@
+from google.cloud import storage
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.models import load_model
+import cv2
+import os
+import shutil
+import numpy as np
+from tqdm.notebook import tqdm
+from firebase_admin import credentials, storage
+
+# Name of the bucket on firebase
+bucket_name = "remembron.appspot.com"
+
+# Path to local file where the videos are to be stored
+local_directory = r"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\DataSet5_Trial"
+
+# Firebase service account key file
+credentials_file = r"C:\Users\SHARVIN JOSHI\Downloads\remembron-firebase-adminsdk-pd0su-80c4172881.json"
+
+# Creating a storage client object
+storage_client = storage.Client.from_service_account_json(credentials_file)
+
+# Reference to bucket
+bucket = storage_client.get_bucket(bucket_name)
+
+# Listing all the blobs in the bucket
+blobs = bucket.list_blobs()
+
+# Dictionary to store the information in {name : information (age , relation with user etc)} format
+dict = {}
+
+for blob in blobs:        
+    try:
+        local_file_path = os.path.join(local_directory, blob.name)
+
+        # Downloading to local file
+        blob.download_to_filename(local_file_path)
+
+        # Print the name of the downloaded file
+        print(f"File downloaded to: {local_file_path}")
+        
+        s1 = (local_file_path.split("\\"))[-1].split(".")
+        
+        s2 = s1[0].split("_")
+        
+        dict.update({s2[0]:[s2[1],s2[2]]})
+        
+    except:
+        continue
+
+print(dict)  # The dictionary has the format of {name : [age , relation]}
+
+# Using haarcascading method to identify faces in images
+
+# Importing face cascade
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+# Setting the path where folders should be stored
+dataset_path = r"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\DataSet5_Trial"
+
+os.chdir(dataset_path)
+print(os.listdir(dataset_path))
+
+# Creating classes for training dataset and storing the face images in respective classes
+# Name of the class is the name of the person whose image is stored inside it
+for x in os.listdir(dataset_path):
+    
+    os.mkdir(dataset_path +"\\" + (x.split("_"))[0])
+    
+    destination_directory = dataset_path +"\\" + (x.split("_"))[0]
+    
+    source = rf"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\DataSet5_Trial\{x}"
+    
+    shutil.copy2(source, destination_directory)
+    
+    os.remove(source)
+
+parent_path = r"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\DataSet5_Trial"
+
+os.chdir(parent_path)
+
+print(os.listdir())
+
+# Going frame by frame in the video and identifying the face in each frame and storing it to the respective class
+for i in os.listdir():
+    
+    path = parent_path + "\\" + i
+    
+    os.chdir(path)
+    
+    print(os.listdir())
+
+    video_path = path + "\\" + (os.listdir())[0]
+    
+    print(video_path)
+
+    cap = cv2.VideoCapture(video_path)     # Capturing the video taken from Firebase
+    
+    a = 1
+    
+    while True:
+        
+        ret, frame = cap.read()
+        
+        if not ret:
+            break
+        
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
+        for (x, y, w, h) in faces:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)   # Making a rectangle around the face,(x,y) being the top left coordinate 
+
+        for (x, y, w, h) in faces:
+        
+            roi_color = frame[y:y+h, x:x+w]     # roi_color is the variable which stores the face image
+            
+            file_name = f"v{a}.jpg"             # Saving each image with a unique name
+            
+            b = parent_path + "\\" + i
+            
+            full_file_path = os.path.join(b, file_name)
+            
+            roi_color_resized = cv2.resize(roi_color,(128,128))
+            
+            cv2.imwrite(full_file_path, roi_color_resized)
+            
+            a += 1
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
