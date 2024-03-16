@@ -1,0 +1,113 @@
+from google.cloud import storage
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.models import load_model
+import cv2
+import os
+import shutil
+import numpy as np
+from tqdm.notebook import tqdm
+from firebase_admin import credentials, storage
+from tensorflow.keras.models import save_model
+
+# Loading the dataset 
+
+dataset = tf.keras.utils.image_dataset_from_directory(r"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\DataSet5_Trial",image_size = (128,128),batch_size=32)
+
+(train_images, train_labels) = next(iter(dataset))
+
+# Getting the class names 
+
+class_names = dataset.class_names
+
+# Architecture of the Convolutional Neural Netowrk (CNN)
+
+# Initialising a Sequential model from Tensorflow Keras
+model = tf.keras.models.Sequential()
+
+# Adding the first filter layer having the activation function ReLU and a max pooling layer
+model.add(tf.keras.layers.Conv2D(filters=32,kernel_size=(4, 4),strides=(1, 1),padding='valid',activation='relu',input_shape=(128,128,3)))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='valid'))
+
+# Second layer of filter and max pool
+model.add(tf.keras.layers.Conv2D(filters=16,kernel_size=(4, 4),strides=(1, 1),padding='valid',activation='relu'))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='valid'))
+
+# Flattening (converting 3D numpy array to 1D array)
+model.add(tf.keras.layers.Flatten())
+
+# Adding the dense layers
+model.add(tf.keras.layers.Dense(128, activation='relu'))
+model.add(tf.keras.layers.Dense(64, activation='relu'))
+model.add(tf.keras.layers.Dense(9, activation='softmax'))
+
+# Compiling the model using adam optimizer and sparse cross entropy loss function
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Training the model
+model.fit(train_images, train_labels, epochs=17, validation_split=0.2)
+
+# Saving the trained model
+save_model(model, r"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\model2.h5")
+
+# Loading the bucket name, local directory to store the image and the credential file
+bucket_name = "remembron.appspot.com"
+
+local_directory = r"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\Prediction"
+
+credentials_file = r"C:\Users\SHARVIN JOSHI\Downloads\remembron-firebase-adminsdk-pd0su-80c4172881.json"
+
+storage_client = storage.Client.from_service_account_json(credentials_file)
+
+bucket = storage_client.get_bucket(bucket_name)
+
+blobs = bucket.list_blobs()
+
+for blob in blobs:
+
+    try:
+        local_file_path = os.path.join(local_directory, os.path.basename(blob.name))
+        
+        blob.download_to_filename(local_file_path)
+        
+        print(f"File downloaded to: {local_file_path}")
+        
+    except Exception as e:
+        
+        print(f"Error downloading file: {e}")
+
+model = load_model(r"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\model2.h5")
+
+def preprocess_image(img_path):
+    
+    img = image.load_img(img_path, target_size=(128, 128))  # adjust target_size according to your model
+    
+    x = image.img_to_array(img)
+    
+    x = np.expand_dims(x, axis=0)
+    
+    return x
+
+class_labels = class_names
+
+os.chdir(r"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\Prediction")
+
+img_path = rf"C:\Users\SHARVIN JOSHI\Desktop\P\FACE RECOGNITION\Prediction\{(os.listdir())[0]}"
+
+img = preprocess_image(img_path)
+
+predictions = model.predict(img)
+
+print("Predictions:")
+
+scores = []
+
+for i, score in enumerate(predictions[0]):
+    
+    scores.append(score)
+    
+print(class_labels[scores.index(max(scores))])
