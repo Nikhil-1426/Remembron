@@ -12,7 +12,7 @@ dependencies:
   cloud_firestore: ^4.14.0
   firebase_auth: ^4.16.0
   firebase_core: ^2.24.2
-  google_fonts: ^6.1.0
+  google_fonts: ^4.0.4
   provider: ^6.1.2
   shared_preferences: ^2.0.8
   image_picker: ^1.0.7
@@ -21,6 +21,8 @@ dependencies:
   firebase_database: ^10.4.10
   firebase_storage: ^11.6.10
   camera: ^0.10.5+9
+  gallery_saver: '^2.3.2'
+  http: ^0.13.6
 
   cupertino_icons: ^1.0.6
   path_provider: ^2.1.2

@@ -178,7 +178,7 @@ class HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ImageUploadScreen(),
+                          builder: (context) => RecognizePage(),
                         ),
                       );
                     }),
