@@ -12,7 +12,7 @@ dependencies:
   cloud_firestore: ^4.14.0
   firebase_auth: ^4.16.0
   firebase_core: ^2.24.2
-  google_fonts: ^4.0.4
+  # google_fonts: ^4.0.4
   provider: ^6.1.2
   shared_preferences: ^2.0.8
   image_picker: ^1.0.7
@@ -22,11 +22,16 @@ dependencies:
   firebase_storage: ^11.6.10
   camera: ^0.10.5+9
   gallery_saver: '^2.3.2'
-  http: ^0.13.6
+  http: ^0.13.3
+  http_parser: ^4.0.0
+  just_audio: ^0.9.36
+  flutter_sound: ^8.4.0
+
 
   cupertino_icons: ^1.0.6
   path_provider: ^2.1.2
   path: ^1.9.0
+  video_player: ^2.8.3
 
 dev_dependencies:
   flutter_test:
