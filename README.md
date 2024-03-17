@@ -23,7 +23,7 @@ We created a machine learning _convolutional neural network(CNN)_ model which id
 
 As mentioned before, the cognitive abilities of a person having Alzheimer's gets affected leading them to forget their surrounding and even their way home when they are on a walk outside. This can cause them to end up even wandering somewhere unkown or potentially dangerous to them. For the prevention of such a scenario, we have used geo-fencing, i.e, we have set a home location and created 2 boundaries(or fences) of differing radius around it to act as a safeguard for them.
 
--  The inner and outer fences are of radius 1km and 2.5km.
+-  The inner and outer fences radius' can be specified by the user
 -  Upon passing out of the inner fence the user gets a message in the text format and TTS format as well. Once they pass the outer fence as well they begin to get
   a notification as well the directions for them to head home on the app.
 -  We used IP tracking for Geolocation of the user which was achieved by using the API _ipgeolocation_.
