@@ -67,8 +67,10 @@ class _ConvLogPageState extends State<ConvLogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightBlue,
       appBar: AppBar(
-        title: Text('Conv Log Page'),
+        backgroundColor: Color.fromARGB(255, 4, 53, 216),
+        title: Text('Conversation Log Page', style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 20)),
       ),
       body: Center(
         child: Column(

@@ -1,169 +1,3 @@
-// // import 'package:flutter/material.dart';
-// // import 'package:permission_handler/permission_handler.dart';
-// // import 'home_screen.dart';
-
-// // class PermissionManager {
-// //   factory PermissionManager() => _instance;
-
-// //   PermissionManager._internal();
-
-// //   static final PermissionManager _instance = PermissionManager._internal();
-
-// //   bool cameraPermission = false;
-// //   bool microphonePermission = false;
-// //   bool filesPermission = false;
-// //   bool locationPermission = false;
-// //   bool contactsPermission = false;
-// // }
-
-// // class AppPermissionsPage extends StatefulWidget {
-// //   @override
-// //   _AppPermissionsPageState createState() => _AppPermissionsPageState();
-// // }
-
-// // class _AppPermissionsPageState extends State<AppPermissionsPage> {
-// //   PermissionManager permissionManager = PermissionManager();
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Scaffold(
-// //       appBar: AppBar(
-// //         title: Text("App Permissions"),
-// //         actions: [
-// //           _buildCircularIconButton(Icons.home, () {
-// //             // Navigate to the home page
-// //             Navigator.pushReplacement(
-// //               context,
-// //               MaterialPageRoute(builder: (context) => HomeScreen()),
-// //             );
-// //           }),
-// //         ],
-// //       ),
-// //       body: Padding(
-// //         padding: const EdgeInsets.all(16.0),
-// //         child: ListView(
-// //           children: [
-// //             _buildPermissionItem("Camera", permissionManager.cameraPermission,
-// //                 (value) {
-// //               _requestPermission(Permission.camera, value, () {
-// //                 setState(() {
-// //                   permissionManager.cameraPermission = value;
-// //                 });
-// //               });
-// //             }),
-// //             _buildPermissionItem(
-// //                 "Microphone", permissionManager.microphonePermission, (value) {
-// //               _requestPermission(Permission.microphone, value, () {
-// //                 setState(() {
-// //                   permissionManager.microphonePermission = value;
-// //                 });
-// //               });
-// //             }),
-// //             _buildPermissionItem("Files", permissionManager.filesPermission,
-// //                 (value) {
-// //               _requestPermission(Permission.storage, value, () {
-// //                 setState(() {
-// //                   permissionManager.filesPermission = value;
-// //                 });
-// //               });
-// //             }),
-// //             _buildPermissionItem(
-// //                 "Location", permissionManager.locationPermission, (value) {
-// //               _requestPermission(Permission.location, value, () {
-// //                 setState(() {
-// //                   permissionManager.locationPermission = value;
-// //                 });
-// //               });
-// //             }),
-// //             _buildPermissionItem(
-// //                 "Contacts", permissionManager.contactsPermission, (value) {
-// //               _requestPermission(Permission.contacts, value, () {
-// //                 setState(() {
-// //                   permissionManager.contactsPermission = value;
-// //                 });
-// //               });
-// //             }),
-// //             // Add more permission items as needed
-// //           ],
-// //         ),
-// //       ),
-// //     );
-// //   }
-
-// //   Widget _buildPermissionItem(
-// //       String title, bool value, ValueChanged<bool> onChanged) {
-// //     return SwitchListTile(
-// //       title: Text(
-// //         title,
-// //         style: TextStyle(fontSize: 18),
-// //       ),
-// //       value: value,
-// //       onChanged: (newValue) {
-// //         onChanged(newValue);
-// //       },
-// //       contentPadding: EdgeInsets.symmetric(horizontal: 8),
-// //     );
-// //   }
-
-// //   Widget _buildCircularIconButton(IconData icon, VoidCallback onPressed) {
-// //     return Padding(
-// //       padding: EdgeInsets.only(right: 12),
-// //       child: GestureDetector(
-// //         onTap: onPressed,
-// //         child: Container(
-// //           width: 35,
-// //           height: 35,
-// //           decoration: BoxDecoration(
-// //             shape: BoxShape.circle,
-// //             border: Border.all(
-// //               color: Color.fromARGB(255, 6, 6, 6),
-// //               width: 2,
-// //             ),
-// //           ),
-// //           child: Center(
-// //             child: Icon(
-// //               icon,
-// //               size: 20,
-// //             ),
-// //           ),
-// //         ),
-// //       ),
-// //     );
-// //   }
-
-// //   Future<void> _requestPermission(Permission permission, bool value,
-// //       VoidCallback onPermissionGranted) async {
-// //     final status = await permission.request();
-
-// //     if (status == PermissionStatus.granted) {
-// //       onPermissionGranted();
-// //     } else {
-// //       // If the status is denied, show a permission request dialog
-// //       if (await permission.isDenied) {
-// //         await permission.request();
-// //       }
-
-// //       // Check the permission status again after the dialog is shown
-// //       final updatedStatus = await permission.status;
-
-// //       if (updatedStatus == PermissionStatus.granted) {
-// //         onPermissionGranted();
-// //       } else {
-// //         // Permission not granted, revert the switch value
-// //         setState(() {
-// //           value = !value;
-// //         });
-// //       }
-// //     }
-// //   }
-// // }
-
-// // void main() {
-// //   runApp(MaterialApp(
-// //     home: AppPermissionsPage(),
-// //   ));
-// // }
-
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -214,8 +48,10 @@ class _AppPermissionsPageState extends State<AppPermissionsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightBlue,
       appBar: AppBar(
-        title: Text("App Permissions"),
+        backgroundColor: Color.fromARGB(255, 4, 53, 216),  
+        title: Text("App Permissions" , style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 22)),
         actions: [
           _buildCircularIconButton(Icons.home, () {
             // Navigate to the home page
@@ -338,7 +174,7 @@ class _AppPermissionsPageState extends State<AppPermissionsPage> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: Color.fromARGB(255, 6, 6, 6),
+              color: Colors.white54,
               width: 2,
             ),
           ),

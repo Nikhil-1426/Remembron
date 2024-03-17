@@ -12,8 +12,10 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightBlue,
       appBar: AppBar(
-        title: Text("Settings"),
+        backgroundColor: Color.fromARGB(255, 4, 53, 216),
+        title: Text("Settings",  style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 22)),
         actions: [
           _buildCircularIconButton(Icons.home, () {
             // Navigate to the user setup page
@@ -102,7 +104,7 @@ class SettingsPage extends StatelessWidget {
         padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: Color.fromARGB(255, 58, 224, 224),
+          color: Color.fromARGB(255, 4, 53, 216),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +131,7 @@ class SettingsPage extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: Color.fromARGB(255, 6, 6, 6),
+              color: Colors.white54,
               width: 2,
             ),
           ),

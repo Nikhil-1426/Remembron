@@ -5,8 +5,10 @@ class TermsAndConditionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightBlue,
       appBar: AppBar(
-        title: Text("Terms and Conditions"),
+        backgroundColor: Color.fromARGB(255, 4, 53, 216),
+        title: Text("Terms and Conditions" , style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 22)),
         actions: [
           _buildCircularIconButton(Icons.home, () {
             // Navigate to the home page
@@ -81,7 +83,7 @@ class TermsAndConditionsPage extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: Color.fromARGB(255, 6, 6, 6),
+              color: Colors.white54,
               width: 2,
             ),
           ),
