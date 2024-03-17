@@ -86,7 +86,9 @@ class _UserSetupPageState extends State<UserSetupPage> {
       backgroundColor: Colors.lightBlue,
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 4, 53, 216),
-        title: Text("Details" , style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 22)),
+        title: Text("Details",
+            style: TextStyle(
+                color: Color.fromRGBO(252, 253, 252, 1), fontSize: 22)),
         actions: [
           _buildCircularIconButton(Icons.home, () {
             Navigator.pushReplacement(
@@ -324,4 +326,3 @@ void main() {
     }),
   ));
 }
-
