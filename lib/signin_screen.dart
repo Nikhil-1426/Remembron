@@ -18,10 +18,10 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Color.fromARGB(255, 195, 248, 141),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 4, 53, 216),
-        title: Text("Sign In", style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 20),),
+        backgroundColor: Color.fromARGB(255, 178, 183, 176),
+        title: Text("Sign In", style: TextStyle(color: Colors.black, fontSize: 20),),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -101,10 +101,10 @@ class _SignInScreenState extends State<SignInScreen> {
                   }
                 },
                 child: Text("Sign In",
-                    style: TextStyle(color: Color.fromRGBO(252, 252, 253, 1), fontSize: 15),),
+                    style: TextStyle(color: Colors.black, fontSize: 15),),
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
-                      Color.fromARGB(255, 4, 53, 216)),
+                      Color.fromARGB(255, 178, 183, 176)),
                 ),
               ),
               SizedBox(height: 20),
@@ -124,7 +124,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     },
                     child: Text(
                       "Sign Up",
-                      style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 4, 53, 216)),
+                      style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 126, 126, 126)),
                     ),
                   ),
                 ],

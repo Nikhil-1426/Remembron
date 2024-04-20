@@ -12,7 +12,7 @@ dependencies:
   cloud_firestore: ^4.14.0
   firebase_auth: ^4.16.0
   firebase_core: ^2.24.2
-  # google_fonts: ^4.0.4
+  google_fonts: ^4.0.4
   provider: ^6.1.2
   shared_preferences: ^2.0.8
   image_picker: ^1.0.7
@@ -51,6 +51,7 @@ flutter:
     - assets/newuser.png
     - assets/convlog.png
     - assets/recognize(2).png
+    
 
 android:
   package: com.example.flutter_application_1

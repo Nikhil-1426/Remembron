@@ -129,10 +129,10 @@ class _RecognizePageState extends State<RecognizePage> {
 @override
 Widget build(BuildContext context) {
   return Scaffold(
-    backgroundColor: Colors.lightBlue,
+    backgroundColor: Color.fromARGB(255, 195, 248, 141),
     appBar: AppBar(
-      backgroundColor: Color.fromARGB(255, 4, 53, 216),
-      title: Text('Recognize Page', style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 22)),
+      backgroundColor: Color.fromARGB(255, 178, 183, 176),
+      title: Text('Recognize Page', style: TextStyle(color: Colors.black, fontSize: 22)),
     ),
     body: Center(
       child: Column(
@@ -149,16 +149,20 @@ Widget build(BuildContext context) {
             children: [
               ElevatedButton(
                 onPressed: _takePicture,
-                child: Text('Recognize', style: TextStyle(fontSize: 13)),
+                child: Text('Recognize', style: TextStyle(fontSize: 13, color : Colors.black)),
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(120, 30)), // Adjust button size here
+                  minimumSize: MaterialStateProperty.all<Size>(Size(150, 35)),
+                  backgroundColor: MaterialStateProperty.all(
+                      Color.fromARGB(255, 178, 183, 176)) // Adjust button size here
                 ),
               ),
               ElevatedButton(
                 onPressed: _uploadImage,
-                child: Text('Upload Image', style: TextStyle(fontSize: 13)),
+                child: Text('Upload Image', style: TextStyle(fontSize: 13, color : Colors.black)),
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(120, 30)), // Adjust button size here
+                  minimumSize: MaterialStateProperty.all<Size>(Size(150, 35)),
+                  backgroundColor: MaterialStateProperty.all(
+                      Color.fromARGB(255, 178, 183, 176)) // Adjust button size here
                 ),
               ),
             ],
@@ -169,16 +173,20 @@ Widget build(BuildContext context) {
             children: [
               ElevatedButton(
                 onPressed: _takeVideo,
-                child: Text('Add a Face', style: TextStyle(fontSize: 13)),
+                child: Text('Add a Face', style: TextStyle(fontSize: 13, color : Colors.black) ),
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(120, 30)), // Adjust button size here
+                  minimumSize: MaterialStateProperty.all<Size>(Size(150, 35)),
+                  backgroundColor: MaterialStateProperty.all(
+                      Color.fromARGB(255, 178, 183, 176)) // Adjust button size here
                 ),
               ),
               ElevatedButton(
                 onPressed: _uploadVideo,
-                child: Text('Update Video', style: TextStyle(fontSize: 13)),
+                child: Text('Update Video', style: TextStyle(fontSize: 13, color : Colors.black)),
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all<Size>(Size(120, 30)), // Adjust button size here
+                  minimumSize: MaterialStateProperty.all<Size>(Size(150, 35)),
+                  backgroundColor: MaterialStateProperty.all(
+                      Color.fromARGB(255, 178, 183, 176)) // Adjust button size here
                 ),
               ),
             ],

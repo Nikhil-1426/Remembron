@@ -67,10 +67,10 @@ class _ConvLogPageState extends State<ConvLogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Color.fromARGB(255, 195, 248, 141),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 4, 53, 216),
-        title: Text('Conversation Log Page', style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 20)),
+        backgroundColor: Color.fromARGB(255, 178, 183, 176),
+        title: Text('Conversation Log Page', style: TextStyle(color: Colors.black, fontSize: 20)),
       ),
       body: Center(
         child: Column(
@@ -85,7 +85,11 @@ class _ConvLogPageState extends State<ConvLogPage> {
             ] else ...[
               ElevatedButton(
                 onPressed: _startRecording,
-                child: Text('Start Recording'),
+                child: Text('Start Recording', style: TextStyle(color: Colors.black)),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                      Color.fromARGB(255, 178, 183, 176)),
+                ),
               ),
             ],
           ],

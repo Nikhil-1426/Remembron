@@ -83,12 +83,12 @@ class _UserSetupPageState extends State<UserSetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Color.fromARGB(255, 195, 248, 141),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 4, 53, 216),
+        backgroundColor: Color.fromARGB(255, 178, 183, 176),
         title: Text("Details",
             style: TextStyle(
-                color: Color.fromRGBO(252, 253, 252, 1), fontSize: 22)),
+                color: Colors.black, fontSize: 22)),
         actions: [
           _buildCircularIconButton(Icons.home, () {
             Navigator.pushReplacement(
@@ -139,7 +139,7 @@ class _UserSetupPageState extends State<UserSetupPage> {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: Colors.white54,
+              color: Colors.black,
               width: 2,
             ),
           ),
@@ -242,7 +242,7 @@ class _UserSetupPageState extends State<UserSetupPage> {
       child: Text(
         "Add a face",
         style: TextStyle(
-          color: Colors.deepPurple,
+          color: Colors.black,
           decoration: TextDecoration.underline,
           fontSize: 18,
         ),
@@ -286,7 +286,10 @@ class _UserSetupPageState extends State<UserSetupPage> {
         print("Gender: ${genderController.text}");
         print("Address: ${addressController.text}");
       },
-      child: Text("Update"),
+      child: Text("Update", style : TextStyle(color: Colors.black)), style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                      Color.fromARGB(255, 178, 183, 176)),
+                ),
     );
   }
 

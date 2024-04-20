@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials, storage
 
-cred = credentials.Certificate(r"C:\Users\Nikhil\Downloads\remembron-firebase-adminsdk-pd0su-809d94bc31.json")  
+cred = credentials.Certificate(r"C:/Users/Nikhil/Downloads/remembron-firebase-adminsdk-pd0su-809d94bc31.json")  
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'remembron.appspot.com'  
 })

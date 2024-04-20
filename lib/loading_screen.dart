@@ -45,7 +45,7 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Color.fromARGB(255, 252, 252, 251),
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -55,8 +55,8 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
             child: FadeTransition(
               opacity: _animation,
               child: Container(
-                width: 500,
-                height: 500,
+                width: 300,
+                height: 300,
                 child: Image.asset('assets/logo.png'),
               ),
             ),

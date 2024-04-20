@@ -5,10 +5,10 @@ class AboutUsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Color.fromARGB(255, 195, 248, 141),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 4, 53, 216),
-        title: Text("About Us" , style: TextStyle(color: Color.fromRGBO(252, 253, 252, 1), fontSize: 22)),
+        backgroundColor: Color.fromARGB(255, 178, 183, 176),
+        title: Text("About Us" , style: TextStyle(color: Colors.black, fontSize: 22)),
         actions: [
           _buildCircularIconButton(Icons.home, () {
             // Navigate to the home page
@@ -99,7 +99,7 @@ class AboutUsPage extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: Colors.white54,
+              color: Colors.black,
               width: 2,
             ),
           ),

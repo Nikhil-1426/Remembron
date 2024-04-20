@@ -77,11 +77,11 @@ class HomeScreenState extends State<HomeScreen> {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           appBarTheme: AppBarTheme(
-            color: Color.fromARGB(255, 4, 53, 216),
+            color: Color.fromARGB(255, 178, 183, 176),
           ),
         ),
         home: Scaffold(
-          backgroundColor: Colors.lightBlue,
+          backgroundColor: Color.fromARGB(255, 195, 248, 141),
           appBar: AppBar(
             automaticallyImplyLeading: false,
             title: Center(
@@ -97,7 +97,7 @@ class HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 33,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black
                         ),
                       ),
                     ],
@@ -107,7 +107,7 @@ class HomeScreenState extends State<HomeScreen> {
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: Colors.white70,
+                        color: const Color.fromARGB(179, 9, 0, 0),
                         width: 2,
                       ),
                       borderRadius: BorderRadius.circular(15),
@@ -116,7 +116,7 @@ class HomeScreenState extends State<HomeScreen> {
                       "Nurturing Memories, Empowering Journeys",
                       style: TextStyle(
                         fontSize: 15,
-                        color: Colors.white70,
+                        color: Color.fromARGB(255, 54, 0, 0),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -358,7 +358,8 @@ class HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: Color.fromARGB(255, 4, 53, 216),
+          color: Color.fromARGB(255, 178, 183, 176),
+          // color: Color.fromARGB(255, 184, 189, 183),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -494,7 +495,7 @@ class HomeScreenState extends State<HomeScreen> {
               Map<String, String> reminder = reminders[index];
               return _buildReminderBox(
                   context, reminder["time"]!, reminder["description"]!,
-                  textColor: Colors.white);
+                  textColor: Color.fromARGB(235, 9, 9, 9));
             },
           ),
         ),
