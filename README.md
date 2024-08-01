@@ -114,7 +114,7 @@ flutter run
    - Used for designing and prototyping the app's user interface and user experience, ensuring a visually appealing and intuitive design.
 
 
-# Hi, We are Team Invictus! 👋
+# Hi, We are the makers of Remembron! 👋
 
 ## About us
 
@@ -128,4 +128,4 @@ Meet the creators behind Remembron – Arnav, Nikhil, Ninad, and Sharvin. We are
 
 ## Happy coding 💯
 
-Made with love from [Inivictus]() ❤️
+Made with love ❤️
