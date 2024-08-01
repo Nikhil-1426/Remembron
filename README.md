@@ -28,7 +28,7 @@
 
 **Download the APK:**
 
-- [Remembron APK](https://drive.google.com/file/d/1H9Zbp8Za2tr8tn0l83FTO3zEh7fkcg02/view?usp=sharing)
+- [Remembron APK](https://mega.nz/file/lz8gSaiR#XACtghgstQIZl-s2Q9Y91iyFTSCbjtXEuXce8bA0W34)
 
 
 
@@ -36,7 +36,7 @@
 
 ## Intro To Remembron Video
 
-[Link to the Video](https://youtu.be/xh8v46zwsx8)
+[Link to the Video](https://youtu.be/bUzlwzDEm48)
 
 
 
