@@ -4,7 +4,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
-import 'consts.dart'; // Make sure you have a consts.dart file with your GOOGLE_MAPS_API_KEY
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'consts.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Make sure you have a consts.dart file with your GOOGLE_MAPS_API_KEY
 
 class GeoFencingPage extends StatefulWidget {
   const GeoFencingPage({super.key});
@@ -17,7 +19,8 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
 
-  LatLng _homeLocation = LatLng(12.7517, 80.2033); // Set home location
+  LatLng?
+      _homeLocation; // Initially null, will be set after fetching from Firestore
   LatLng? _currentP;
 
   Map<PolylineId, Polyline> polylines = {};
@@ -26,69 +29,128 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
   @override
   void initState() {
     super.initState();
-    setGeofences();
-    getLocationUpdates().then(
-      (_) => {
-        getPolylinePoints().then((coordinates) => {
-              generatePolyLineFromPoints(coordinates),
-            }),
-      },
-    );
+    _fetchHomeCoordinates().then((_) {
+      getLocationUpdates().then(
+        (_) => {
+          getPolylinePoints().then((coordinates) => {
+                generatePolyLineFromPoints(coordinates),
+              }),
+        },
+      );
+    });
+  }
+
+  Future<void> _fetchHomeCoordinates() async {
+    // Get the current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String userId = user.uid; // Get the current user's ID
+
+      try {
+        // Fetch the user's document from Firestore
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          // Retrieve the coordinates string
+          String homeCoordinates = userDoc[
+              'coordinates']; // Format: "19.215473799999998, 72.8536768"
+          List<String> latLng = homeCoordinates.split(', ');
+
+          double homeLat = double.parse(latLng[0]);
+          double homeLng = double.parse(latLng[1]);
+
+          // Update the state with the fetched home location
+          setState(() {
+            _homeLocation = LatLng(homeLat, homeLng);
+            setGeofences(); // Set geofences with the fetched home location
+          });
+        } else {
+          print("Home coordinates not found in Firestore.");
+        }
+      } catch (e) {
+        print("Error fetching home coordinates: $e");
+      }
+    } else {
+      print("No user is currently signed in.");
+    }
   }
 
   void setGeofences() {
-    setState(() {
-      _circles.add(
-        Circle(
-          circleId: CircleId('innerGeofence'),
-          center: _homeLocation,
-          radius: 1000,
-          fillColor: Colors.blue.withOpacity(0.3),
-          strokeColor: Colors.blue,
-          strokeWidth: 1,
-        ),
-      );
-      _circles.add(
-        Circle(
-          circleId: CircleId('outerGeofence'),
-          center: _homeLocation,
-          radius: 2000,
-          fillColor: Colors.red.withOpacity(0.3),
-          strokeColor: Colors.red,
-          strokeWidth: 1,
-        ),
-      );
-    });
+    if (_homeLocation != null) {
+      setState(() {
+        _circles.add(
+          Circle(
+            circleId: CircleId('innerGeofence'),
+            center: _homeLocation!,
+            radius: 1000,
+            fillColor: Colors.blue.withOpacity(0.3),
+            strokeColor: Colors.blue,
+            strokeWidth: 1,
+          ),
+        );
+        _circles.add(
+          Circle(
+            circleId: CircleId('outerGeofence'),
+            center: _homeLocation!,
+            radius: 2000,
+            fillColor: Colors.red.withOpacity(0.3),
+            strokeColor: Colors.red,
+            strokeWidth: 1,
+          ),
+        );
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _currentP == null
+      appBar: AppBar(
+        title: const Text('Geofencing',
+            style: TextStyle(
+                color: Color.fromARGB(179, 251, 236, 236), fontSize: 21)),
+        backgroundColor: Color.fromARGB(240, 44, 91, 91),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Color.fromARGB(179, 251, 236, 236),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: _currentP == null || _homeLocation == null
           ? const Center(
               child: Text("Loading..."),
             )
-          : GoogleMap(
-              onMapCreated: (GoogleMapController controller) =>
-                  _mapController.complete(controller),
-              initialCameraPosition: CameraPosition(
-                target: _homeLocation,
-                zoom: 13,
-              ),
-              markers: {
-                Marker(
-                  markerId: MarkerId("_currentLocation"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position: _currentP!,
+          : Column(
+              children: [
+                Expanded(
+                  child: GoogleMap(
+                    onMapCreated: (GoogleMapController controller) =>
+                        _mapController.complete(controller),
+                    initialCameraPosition: CameraPosition(
+                      target: _homeLocation!,
+                      zoom: 13,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: MarkerId("_currentLocation"),
+                        icon: BitmapDescriptor.defaultMarker,
+                        position: _currentP!,
+                      ),
+                      Marker(
+                        markerId: MarkerId("_homeLocation"),
+                        icon: BitmapDescriptor.defaultMarker,
+                        position: _homeLocation!,
+                      ),
+                    },
+                    polylines: Set<Polyline>.of(polylines.values),
+                    circles: _circles,
+                  ),
                 ),
-                Marker(
-                  markerId: MarkerId("_homeLocation"),
-                  icon: BitmapDescriptor.defaultMarker,
-                  position: _homeLocation,
-                ),
-              },
-              polylines: Set<Polyline>.of(polylines.values),
-              circles: _circles,
+              ],
             ),
     );
   }
@@ -139,8 +201,8 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
   }
 
   void checkGeofence() {
-    if (_currentP != null) {
-      double distanceFromHome = calculateDistance(_homeLocation, _currentP!);
+    if (_currentP != null && _homeLocation != null) {
+      double distanceFromHome = calculateDistance(_homeLocation!, _currentP!);
       if (distanceFromHome > 2000) {
         getPolylinePoints();
       }
@@ -151,20 +213,22 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
     var distance = Geolocator.distanceBetween(
       start.latitude,
       start.longitude,
-      start.latitude,
       end.latitude,
+      end.longitude,
     );
     return distance;
   }
 
   Future<List<LatLng>> getPolylinePoints() async {
+    if (_homeLocation == null || _currentP == null) return [];
+
     List<LatLng> polylineCoordinates = [];
     PolylinePoints polylinePoints = PolylinePoints();
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       GOOGLE_MAPS_API_KEY,
       PointLatLng(_currentP!.latitude, _currentP!.longitude),
-      PointLatLng(_homeLocation.latitude, _homeLocation.longitude),
+      PointLatLng(_homeLocation!.latitude, _homeLocation!.longitude),
       travelMode: TravelMode.walking,
     );
 
