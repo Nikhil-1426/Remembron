@@ -9,6 +9,8 @@ import 'signup_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -39,14 +41,31 @@ class HomeScreenState extends State<HomeScreen> {
   //   );
   // }
 
-  void _loadUserDetails() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _userName = prefs.getString('name') ?? '';
-      _userAge = prefs.getInt('age') ?? 0;
-      _userGender = prefs.getString('gender') ?? '';
-    });
-  }
+        void _loadUserDetails() {
+        // Initialize Firestore instance
+        FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+        // Get user ID (e.g., from FirebaseAuth)
+        String userId = FirebaseAuth.instance.currentUser!.uid;
+
+        // Set up a listener for real-time updates
+        firestore.collection('users').doc(userId).snapshots().listen((documentSnapshot) {
+          if (documentSnapshot.exists) {
+            // Extract user details
+            var userData = documentSnapshot.data() as Map<String, dynamic>;
+
+            setState(() {
+              _userName = userData['name'] ?? '';
+              _userAge = userData['age'] ?? 0;
+              _userGender = userData['gender'] ?? '';
+              // Assuming profile picture URL is stored under 'profilePicture'
+            });
+          }
+        });
+      }
+
+
+
 
   double iconSize = 83.0; // Initial icon size, you can adjust as needed
   List<Map<String, String>> reminders = [
@@ -69,8 +88,48 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     _retrieveRemindersFromSharedPreferences();
     _loadUserDetails();
+    _checkUserSetup();
   }
 
+    void _checkUserSetup() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+
+    DocumentSnapshot userDoc = await firestore.collection('users').doc(userId).get();
+
+    if (userDoc.exists) {
+      var userData = userDoc.data() as Map<String, dynamic>;
+      bool isSetupComplete = userData['setupComplete'] ?? false;
+
+      if (!isSetupComplete) {
+        Future.delayed(Duration.zero, () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Update Your Details'),
+                content: Text('Please update your details in Settings -> User Details.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SettingsPage(),
+                        ),
+                      );
+                    },
+                    child: Text('Go to Settings'),
+                  ),
+                ],
+              );
+            },
+          );
+        });
+      }
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -95,10 +154,9 @@ class HomeScreenState extends State<HomeScreen> {
                       Text(
                         "Remembron",
                         style: TextStyle(
-                          fontSize: 33,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(179, 251, 236, 236)
-                        ),
+                            fontSize: 33,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(179, 251, 236, 236)),
                       ),
                     ],
                   ),
@@ -272,7 +330,10 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _buildUserInfo(String title, String value) {
     return Text(
       "$title $value",
-      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,),
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 
@@ -348,7 +409,9 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildReminderBox(BuildContext context, String time, String description, {Color textColor = Colors.orangeAccent}) {
+  Widget _buildReminderBox(
+      BuildContext context, String time, String description,
+      {Color textColor = Colors.orangeAccent}) {
     return GestureDetector(
       onTap: () {
         _showReminderOptionsDialog(context, time, description);
