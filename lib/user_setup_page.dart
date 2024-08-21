@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/SettingsPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -69,17 +70,6 @@ class _UserSetupPageState extends State<UserSetupPage> {
       }
     }
   }
-
-  void _markSetupComplete() async {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  String userId = FirebaseAuth.instance.currentUser!.uid;
-
-  await firestore.collection('users').doc(userId).update({
-    'setupComplete': true,
-  });
-
-  Navigator.pop(context); // Close the UserSetupPage
-}
 
   Future<void> _getCoordinatesFromAddress(String address) async {
     try {
@@ -385,4 +375,3 @@ class _UserSetupPageState extends State<UserSetupPage> {
     }); // Save changes to Firestore
   }
 }
-

@@ -12,7 +12,10 @@ class _ConvLogPageState extends State<ConvLogPage> {
   final SpeechToText _speechToText = SpeechToText();
 
   bool _speechEnabled = false;
+  bool _isListening = false;
   String _wordsSpoken = "";
+  String _summary = "";
+  String _reminders = "";
   double _confidenceLevel = 0;
 
   @override
@@ -27,96 +30,182 @@ class _ConvLogPageState extends State<ConvLogPage> {
   }
 
   void _startListening() async {
-    await _speechToText.listen(onResult: _onSpeechResult);
     setState(() {
-      _confidenceLevel = 0;
+      _isListening = true;
     });
+    await _speechToText.listen(onResult: _onSpeechResult);
   }
 
   void _stopListening() async {
+    setState(() {
+      _isListening = false;
+    });
     await _speechToText.stop();
-    setState(() {});
   }
 
   void _onSpeechResult(result) {
     setState(() {
-      _wordsSpoken = "${result.recognizedWords}";
+      _wordsSpoken = result.recognizedWords;
       _confidenceLevel = result.confidence;
+
+      // Process the text to extract reminders and summarize it
+      _processText(_wordsSpoken);
+    });
+  }
+
+  void _processText(String text) {
+    final reminderKeywords = [
+      'reminder', 'appointment', 'meeting', 'task', 'event', 'deadline',
+      'due', 'notify', 'alert', 'remind', 'schedule', 'follow-up',
+      'to-do', 'remind me', 'plan', 'remind', 'check', 'update',
+      'set a reminder', 'make a note', 'book', 'reserve', 'assign',
+      'confirm', 'recall', 'message', 'call', 'contact', 'visit',
+      'pick up', 'drop off', 'buy', 'order', 'review', 'finish',
+      'complete', 'report', 'send', 'write', 'reply'
+    ];
+    final reminderList = <String>[];
+
+    final words = text.split(' ');
+    for (int i = 0; i < words.length; i++) {
+      for (final keyword in reminderKeywords) {
+        if (words[i].toLowerCase().contains(keyword)) {
+          reminderList.add(text.substring(text.indexOf(words[i])));
+          break;
+        }
+      }
+    }
+
+    final summary = text.length > 100 ? text.substring(0, 100) + '...' : text;
+
+    setState(() {
+      _summary = summary;
+      _reminders = reminderList.join('\n');
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-          appBar: AppBar(
-      backgroundColor: Color.fromARGB(240, 44, 91, 91),
-      title: Text(
-        'Speech Demo',
-        style: TextStyle(
-          color: Color.fromARGB(179, 251, 236, 236), fontSize: 21
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(240, 44, 91, 91),
+        title: Text(
+          'Conversation Logs',
+          style: TextStyle(
+            color: Color.fromARGB(179, 251, 236, 236),
+            fontSize: 22,
+          ),
         ),
+        leading: IconButton(
+        icon: Icon(
+        Icons.arrow_back,
+        color: Color.fromARGB(179, 251, 236, 236), // Change this to your desired color
+        ),
+      onPressed: () => Navigator.of(context).pop(),
       ),
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        color: Color.fromARGB(179, 251, 236, 236), // Set the color of the back button here
-        onPressed: () {
-          Navigator.pop(context); // Navigate back
-        },
       ),
-    ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                _speechToText.isListening
-                    ? "Listening..."
-                    : _speechEnabled
-                        ? "Tap the microphone to start listening..."
-                        : "Speech not available",
-                style: TextStyle(fontSize: 20.0),
+            if (_isListening)
+              Center(
+                child: CircularProgressIndicator(),
               ),
+            SizedBox(height: 16),
+            Text(
+              _speechToText.isListening
+                  ? "Listening..."
+                  : _speechEnabled
+                      ? "Tap the microphone to start recognition..."
+                      : "Speech recognition not available",
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
             ),
+            SizedBox(height: 16),
             Expanded(
-              child: Container(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  _wordsSpoken,
-                  style: const TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w300,
-                  ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_wordsSpoken.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.teal[50],
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          _wordsSpoken,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    SizedBox(height: 16),
+                    if (_summary.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.teal[100],
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          'Summary: $_summary',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    SizedBox(height: 16),
+                    if (_reminders.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.teal[200],
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 2,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          'Reminders:\n$_reminders',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                    SizedBox(height: 100), // To ensure FAB is visible
+                  ],
                 ),
               ),
             ),
-            if (_speechToText.isNotListening && _confidenceLevel > 0)
-              Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 100,
-                ),
-                child: Text(
-                  "Confidence: ${(_confidenceLevel * 100).toStringAsFixed(1)}%",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w200,
-                  ),
-                ),
-              )
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _speechToText.isListening ? _stopListening : _startListening,
-        tooltip: 'Listen',
+        tooltip: _speechToText.isListening ? 'Stop Listening' : 'Start Listening',
         child: Icon(
-          _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
-          color: Colors.white,
+          _speechToText.isListening ? Icons.mic_off : Icons.mic,
+          color: Color.fromARGB(179, 251, 236, 236),
         ),
         backgroundColor: Color.fromARGB(240, 44, 91, 91),
       ),
     );
   }
 }
-
-
