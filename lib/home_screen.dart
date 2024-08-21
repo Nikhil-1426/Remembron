@@ -88,48 +88,8 @@ class HomeScreenState extends State<HomeScreen> {
     super.initState();
     _retrieveRemindersFromSharedPreferences();
     _loadUserDetails();
-    _checkUserSetup();
   }
 
-    void _checkUserSetup() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    String userId = FirebaseAuth.instance.currentUser!.uid;
-
-    DocumentSnapshot userDoc = await firestore.collection('users').doc(userId).get();
-
-    if (userDoc.exists) {
-      var userData = userDoc.data() as Map<String, dynamic>;
-      bool isSetupComplete = userData['setupComplete'] ?? false;
-
-      if (!isSetupComplete) {
-        Future.delayed(Duration.zero, () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('Update Your Details'),
-                content: Text('Please update your details in Settings -> User Details.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SettingsPage(),
-                        ),
-                      );
-                    },
-                    child: Text('Go to Settings'),
-                  ),
-                ],
-              );
-            },
-          );
-        });
-      }
-    }
-  }
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
