@@ -1,107 +1,122 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class ConvLogPage extends StatefulWidget {
+  const ConvLogPage({super.key});
+
   @override
-  _ConvLogPageState createState() => _ConvLogPageState();
+  State<ConvLogPage> createState() => _ConvLogPageState();
 }
 
 class _ConvLogPageState extends State<ConvLogPage> {
-  FlutterSoundRecorder? _audioRecorder = FlutterSoundRecorder();
-  String? _recordingPath;
-  bool _isRecording = false;
+  final SpeechToText _speechToText = SpeechToText();
+
+  bool _speechEnabled = false;
+  String _wordsSpoken = "";
+  double _confidenceLevel = 0;
 
   @override
   void initState() {
     super.initState();
-    _audioRecorder!.openAudioSession().then((value) {});
+    initSpeech();
   }
 
-  @override
-  void dispose() {
-    _audioRecorder!.closeAudioSession();
-    super.dispose();
+  void initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
   }
 
-  Future<void> _startRecording() async {
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
     setState(() {
-      _isRecording = true;
-    });
-
-    // Start recording
-    await _audioRecorder!.startRecorder(toFile: 'tempAudio');
-
-    // Start a timer to stop recording after one minute
-    Timer(Duration(minutes: 1), () async {
-      await _stopRecording();
+      _confidenceLevel = 0;
     });
   }
 
-  Future<void> _stopRecording() async {
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    await _audioRecorder!.stopRecorder();
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(result) {
     setState(() {
-      _isRecording = false;
+      _wordsSpoken = "${result.recognizedWords}";
+      _confidenceLevel = result.confidence;
     });
-    String filePath = '${appDocDir.path}/${_recordingPath}.aac';
-    File file = File(filePath);
-    if (file.existsSync()) {
-      try {
-        final Reference storageReference =
-            FirebaseStorage.instance.ref('https://console.firebase.google.com/u/0/project/remembron/storage/remembron.appspot.com/files/~2Faudio_files').child('audio_files/${DateTime.now()}.aac');
-        final UploadTask uploadTask = storageReference.putFile(file);
-        // Properly handle the completion of the uploadTask
-        await uploadTask;
-        print('File uploaded successfully');
-      } catch (e) {
-        print('Error uploading file: $e');
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 223, 218, 218),
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(240, 44, 91, 91),
-        title: Text('Conversation Log Page', style: TextStyle(color: Color.fromARGB(179, 251, 236, 236), fontSize: 21)),
-        iconTheme : IconThemeData(
-          color: Color.fromARGB(179, 251, 236, 236), // Set the back button color
+          appBar: AppBar(
+      backgroundColor: Color.fromARGB(240, 44, 91, 91),
+      title: Text(
+        'Speech Demo',
+        style: TextStyle(
+          color: Color.fromARGB(179, 251, 236, 236), fontSize: 21
         ),
       ),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        color: Color.fromARGB(179, 251, 236, 236), // Set the color of the back button here
+        onPressed: () {
+          Navigator.pop(context); // Navigate back
+        },
+      ),
+    ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_isRecording) ...[
-              Text('Recording...'),
-              ElevatedButton(
-                onPressed: _stopRecording,
-                child: Text('Stop Recording'),
+            Container(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                _speechToText.isListening
+                    ? "Listening..."
+                    : _speechEnabled
+                        ? "Tap the microphone to start listening..."
+                        : "Speech not available",
+                style: TextStyle(fontSize: 20.0),
               ),
-            ] else ...[
-              ElevatedButton(
-                onPressed: _startRecording,
-                child: Text('Start Recording', style: TextStyle(color: Colors.black)),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Color.fromARGB(210, 233, 175, 74)),
+            ),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  _wordsSpoken,
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w300,
+                  ),
                 ),
               ),
-            ],
+            ),
+            if (_speechToText.isNotListening && _confidenceLevel > 0)
+              Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 100,
+                ),
+                child: Text(
+                  "Confidence: ${(_confidenceLevel * 100).toStringAsFixed(1)}%",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w200,
+                  ),
+                ),
+              )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _speechToText.isListening ? _stopListening : _startListening,
+        tooltip: 'Listen',
+        child: Icon(
+          _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+          color: Colors.white,
+        ),
+        backgroundColor: Color.fromARGB(240, 44, 91, 91),
       ),
     );
   }
 }
-
-
 
 

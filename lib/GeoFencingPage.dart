@@ -29,6 +29,7 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
   @override
   void initState() {
     super.initState();
+    initializeGeofenceFields();
     _fetchHomeCoordinates().then((_) {
       getLocationUpdates().then(
         (_) => {
@@ -39,6 +40,42 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
       );
     });
   }
+
+    Future<void> updateGeofenceRadii(double innerRadius, double outerRadius) async {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        String userId = user.uid;
+        try {
+          await FirebaseFirestore.instance.collection('users').doc(userId).update({
+            'inner_geofence_radius': innerRadius,
+            'outer_geofence_radius': outerRadius,
+          });
+        } catch (e) {
+          print("Error updating geofence radii: $e");
+        }
+      } else {
+        print("No user is currently signed in.");
+      }
+    }
+
+    Future<void> initializeGeofenceFields() async {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        String userId = user.uid;
+        try {
+          await FirebaseFirestore.instance.collection('users').doc(userId).set({
+            'inner_geofence_radius': 1000, // Default value
+            'outer_geofence_radius': 2000, // Default value
+          }, SetOptions(merge: true));
+        } catch (e) {
+          print("Error initializing geofence fields: $e");
+        }
+      } else {
+        print("No user is currently signed in.");
+      }
+    }
 
   Future<void> _fetchHomeCoordinates() async {
     // Get the current user
@@ -58,6 +95,8 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
           // Retrieve the coordinates string
           String homeCoordinates = userDoc[
               'coordinates']; // Format: "19.215473799999998, 72.8536768"
+          int innerRadius = (userDoc['inner_geofence_radius'] as int?) ?? 1000;
+          int outerRadius = (userDoc['outer_geofence_radius'] as int?) ?? 2000;
           List<String> latLng = homeCoordinates.split(', ');
 
           double homeLat = double.parse(latLng[0]);
@@ -66,7 +105,7 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
           // Update the state with the fetched home location
           setState(() {
             _homeLocation = LatLng(homeLat, homeLng);
-            setGeofences(); // Set geofences with the fetched home location
+            setGeofences(innerRadius, outerRadius); // Set geofences with the fetched home location
           });
         } else {
           print("Home coordinates not found in Firestore.");
@@ -79,7 +118,7 @@ class _GeoFencingPageState extends State<GeoFencingPage> {
     }
   }
 
-  void setGeofences() {
+  void setGeofences(int innerRadius, int outerRadius) {
     if (_homeLocation != null) {
       setState(() {
         _circles.add(

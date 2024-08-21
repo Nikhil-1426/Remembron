@@ -155,7 +155,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             .collection('users')
                             .doc(userCredential.user!.uid)
                             .update({
-                          'username': usernameController.text,
                           'email': emailController.text,
                         }).catchError((error) async {
                           // If document does not exist, use set
@@ -163,7 +162,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               .collection('users')
                               .doc(userCredential.user!.uid)
                               .set({
-                            'username': usernameController.text,
                             'email': emailController.text,
                           });
                         });
